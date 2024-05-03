@@ -41,23 +41,25 @@ public class AuthController {
     private static final Logger logger = Logger.getLogger(AuthController.class.getName());
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> registerhandler(@Valid @RequestBody UserDTO user){
-
-        String encodedPass = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPass);
-        user.setRole(USER);
-
+    public ResponseEntity<AuthResponse> registerHandler(@Valid @RequestBody UserDTO user){
         try {
-            AuthResponse response = userService.registerUser(user);
+
+            String encodedPass = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPass);
+            user.setRole(USER);
+
+            AuthResponse authresponse = userService.registerUser(user);
+            authresponse.setMessage("User registered successfully !!");
 
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(response);
+                    .body(authresponse);
 
         } catch (Exception e){
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponse.builder().message(e.getMessage()).build());
+//                    .body(AuthResponse.builder().message(e.getMessage()).build());
+            .body(AuthResponse.builder().message(e.getMessage()).build());
 
         }
     }
@@ -66,9 +68,13 @@ public class AuthController {
     public ResponseEntity<AuthResponse> loginHandler(HttpServletRequest request, @Valid @RequestBody LoginCredentials credentials){
 
         try {
+
+            AuthResponse authresponse = userService.loginUser(credentials);
+            authresponse.setMessage("Logged in successfully !!");
+
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(userService.loginUser(credentials));
+                    .body(authresponse);
         }catch(AuthenticationException e){
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -78,22 +84,13 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity me(HttpServletRequest request, Principal principal, Model model) {
-        HttpSession session = request.getSession(false);
-        if(session == null){
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("No logged in user");
-        }
+    public ResponseEntity me() {
 
-        SecurityContext context = (SecurityContext) session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-
-        User user = userRepo.findByEmail(context.getAuthentication().getName());
-        System.out.println(user);
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(user);
+                .body(userService.getUser(userName));
     }
 
     @PostMapping("/logout")

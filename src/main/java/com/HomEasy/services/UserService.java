@@ -7,4 +7,5 @@ import com.HomEasy.DTOs.UserDTO;
 public interface UserService {
     AuthResponse registerUser(UserDTO userDTO);
     AuthResponse loginUser(LoginCredentials loginCredentials);
+    UserDTO getUser(String email);
 }

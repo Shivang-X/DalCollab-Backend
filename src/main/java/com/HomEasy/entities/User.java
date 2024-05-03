@@ -2,6 +2,7 @@ package com.HomEasy.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -27,18 +28,22 @@ public class User implements UserDetails {
 
     @Size(min = 5, max = 20, message= "Firstname must be between 5 and 20 characters long ")
     @Pattern(regexp = "^[a-zA-Z]*$", message = "First Name must not contain numbers or special characters")
+    @NotNull
     private String firstName;
 
     @Size(min = 5, max = 20, message = "Lastname must be between 5 and 20 characters long")
     @Pattern(regexp = "^[a-zA-Z]*$", message = "Last Name must not contain numbers or special characters")
+    @NotNull
     private String lastName;
 
     @Size(min = 10, max = 10, message = "Mobile number must be 10 digits only")
     @Pattern(regexp = "^\\d{10}$", message = "Mobile Number must contain only Numbers")
+    @NotNull
     private String mobileNumber;
 
     @Email
     @Column(unique = true, nullable = false)
+    @NotNull
     private String email;
 
     private String password;
