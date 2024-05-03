@@ -1,12 +1,15 @@
 package com.HomEasy.config;
 
+
 import com.HomEasy.security.JWTConfig;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,20 +18,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.security.SignatureException;
+
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    final JWTConfig jwtConfig;
-    final UserDetailsService userDetailsService;
+    private final JWTConfig jwtConfig;
+    private final UserDetailsService userDetailsService;
+    private static final int usernameSubstringIndex =7;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request,
                                     @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain
     ) throws ServletException, IOException {
-        if (request.getServletPath().contains("/api/v1/auth/")) {
+        String servletPath = request.getServletPath();
+        if (servletPath != null && servletPath.contains("/api/v1/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -41,22 +48,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+        try {
+            jwt = authHeader.substring(usernameSubstringIndex);
+            userEmail = jwtConfig.extractUsername(jwt);
 
-        jwt = authHeader.substring(7);
-        userEmail = jwtConfig.extractUsername(jwt);
-
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-            boolean isTokenValid = !jwtConfig.isTokenExpired(jwt);
-            if(isTokenValid && jwtConfig.isTokenValid(jwt, userDetails)){
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                        null,
-                    userDetails.getAuthorities()
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+                boolean isTokenValid = !jwtConfig.isTokenExpired(jwt);
+                if(isTokenValid && jwtConfig.isTokenValid(jwt, userDetails)){
+                    var authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        }catch (ExpiredJwtException e){
+            System.out.println("Access token expired");
+        }catch (Exception e){
+            System.out.println("Invalid token");
         }
         filterChain.doFilter(request, response);
     }
 }
+

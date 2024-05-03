@@ -28,7 +28,6 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final JWTConfig jwtConfig;
     private final AuthenticationManager authenticationManager;
-    private final UserServiceImpl userService;
 
     @Override
     public AuthResponse registerUser(UserDTO userDTO) {
@@ -84,10 +83,10 @@ public class UserServiceImpl implements UserService {
     public UserDTO getUser(String email) {
         try{
             String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-            if(userName == null){
-                throw new RuntimeException("User not found");
-            }
-            return userService.getUser(userName);
+            User user = userRepo.findByEmail(userName);
+            UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+            userDTO.setPassword(null);
+            return userDTO;
         }catch(Exception e){
             throw new RuntimeException(e.getMessage());
         }

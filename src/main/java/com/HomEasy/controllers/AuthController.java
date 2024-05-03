@@ -58,8 +58,7 @@ public class AuthController {
         } catch (Exception e){
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-//                    .body(AuthResponse.builder().message(e.getMessage()).build());
-            .body(AuthResponse.builder().message(e.getMessage()).build());
+                    .body(AuthResponse.builder().message(e.getMessage()).build());
 
         }
     }
@@ -81,16 +80,6 @@ public class AuthController {
                     .body(AuthResponse.builder().message(e.getMessage()).build());
 
         }
-    }
-
-    @GetMapping("/me")
-    public ResponseEntity me() {
-
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getUser(userName));
     }
 
     @PostMapping("/logout")
