@@ -12,4 +12,5 @@ public interface UserService {
     UserDTO getUser(String email);
     UserDTO update(UserDTO userDTO);
     List<String> addSkills(List<String> skills);
+    List<String> addInterests(List<String> inerests);
 }

@@ -143,4 +143,26 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public List<String> addInterests(List<String> inerests) {
+        try{
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                throw new Exception("User not found");
+            }
+
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepo.findByEmail(userName);
+
+            user.setInterests(inerests);
+
+            User savedUser = userRepo.save(user);
+
+            return savedUser.getInterests();
+
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
 }

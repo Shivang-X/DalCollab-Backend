@@ -57,4 +57,10 @@ public class UserController {
         userDTO = userService.update(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(userDTO);
     }
+
+    @PutMapping("/addinterests")
+    public ResponseEntity<List<String>> addInterests(@Valid @RequestBody List<String> interests){
+        interests = userService.addInterests(interests);
+        return ResponseEntity.status(HttpStatus.OK).body(interests);
+    }
 }

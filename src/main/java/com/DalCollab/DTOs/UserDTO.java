@@ -23,5 +23,6 @@ public class UserDTO {
     private String bio;
     private List<Project> projects;
     private List<String> skills;
+    private List<String> interests;
 
 }
