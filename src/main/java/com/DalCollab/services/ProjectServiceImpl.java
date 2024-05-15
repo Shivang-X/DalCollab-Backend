@@ -8,6 +8,7 @@ import com.DalCollab.repositories.UserRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,16 @@ public class ProjectServiceImpl implements ProjectService{
         projectDTO = modelMapper.map(savedProject, ProjectDTO.class);
 
         return projectDTO;
+    }
+
+    @Override
+    public String deleteProject(ProjectDTO projectDTO) {
+        try{
+            projectRepo.deleteById(projectDTO.getId());
+            return "Success";
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override

@@ -49,6 +49,12 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(projectDTO);
     }
 
+    @DeleteMapping("/deleteproject")
+    public ResponseEntity<String> deleteProject(@Valid @RequestBody ProjectDTO projectDTO){
+        String response = projectService.deleteProject(projectDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @PutMapping("/addskills")
     public ResponseEntity<List<String>> addskills(@Valid @RequestBody List<String> skills){
         skills = userService.addSkills(skills);
@@ -75,7 +81,6 @@ public class UserController {
 
     @PutMapping("/updateproject")
     public ResponseEntity<ProjectDTO> updateProject(@Valid @RequestBody ProjectDTO projectDTO){
-        System.out.println(projectDTO.getDescription());
         projectDTO = userService.updateProject(projectDTO);
         return ResponseEntity.status(HttpStatus.OK).body(projectDTO);
     }
