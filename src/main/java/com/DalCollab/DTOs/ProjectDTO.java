@@ -18,5 +18,6 @@ public class ProjectDTO {
     private String description;
     private List<String> tags;
     private User developer;
+    private String developerName;
 
 }

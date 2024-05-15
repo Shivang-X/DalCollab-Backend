@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Size(min = 1, max = 20, message= "Firstname must be between 1 and 20 characters long ")
+    @Size(min = 1, max = 20, message= "Username must be between 1 and 20 characters long ")
     @Pattern(regexp = "^[a-zA-Z]*$", message = "First Name must not contain numbers or special characters")
     @NotNull
     private String userName;

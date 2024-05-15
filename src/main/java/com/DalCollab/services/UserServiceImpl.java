@@ -1,10 +1,13 @@
 package com.DalCollab.services;
 
+import com.DalCollab.DTOs.ProjectDTO;
+import com.DalCollab.entities.Project;
 import com.DalCollab.entities.User;
 import com.DalCollab.exception.APIException;
 import com.DalCollab.payloads.AuthResponse;
 import com.DalCollab.payloads.LoginCredentials;
 import com.DalCollab.DTOs.UserDTO;
+import com.DalCollab.repositories.ProjectRepo;
 import com.DalCollab.repositories.UserRepo;
 import com.DalCollab.security.JWTConfig;
 import jakarta.transaction.Transactional;
@@ -17,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,6 +29,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo;
+    private final ProjectRepo projectRepo;
     private final ModelMapper modelMapper;
     private final JWTConfig jwtConfig;
     private final AuthenticationManager authenticationManager;
@@ -159,6 +164,38 @@ public class UserServiceImpl implements UserService {
             User savedUser = userRepo.save(user);
 
             return savedUser.getInterests();
+
+        }catch(Exception e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ProjectDTO updateProject(ProjectDTO projectDTO) {
+        try{
+
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                throw new Exception("User not found");
+            }
+
+            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepo.findByEmail(userName);
+
+            Project project = projectRepo.findById(projectDTO.getId())
+                    .orElseThrow(() -> new Exception("Project not found"));
+
+            project.setName(projectDTO.getName());
+            project.setDeveloper(projectDTO.getDeveloper());
+            project.setDescription(projectDTO.getDescription());
+            project.setTags(projectDTO.getTags());
+            project.setDeveloper(user);
+
+            Project updatedproject = projectRepo.save(project);
+
+
+            projectDTO = modelMapper.map(updatedproject, ProjectDTO.class);
+
+            return projectDTO;
 
         }catch(Exception e){
             throw new RuntimeException(e.getMessage());

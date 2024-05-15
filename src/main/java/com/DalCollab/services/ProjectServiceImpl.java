@@ -11,6 +11,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -32,5 +36,27 @@ public class ProjectServiceImpl implements ProjectService{
         projectDTO = modelMapper.map(savedProject, ProjectDTO.class);
 
         return projectDTO;
+    }
+
+    @Override
+    public List<ProjectDTO> getAllProjects() {
+        List<Project> projects = projectRepo.findAll();
+//        List<ProjectDTO> projectDTOs = projects.stream()
+//                .map(project -> modelMapper.map(project, ProjectDTO.class))
+//                .toList();
+
+        List<ProjectDTO> projectDTOs = new ArrayList<>();
+        for (Project project : projects) {
+            ProjectDTO projectDTO = new ProjectDTO();
+            projectDTO.setId(project.getId());
+            projectDTO.setName(project.getName());
+            projectDTO.setDescription(project.getDescription());
+            projectDTO.setDeveloperName(project.getDeveloper().getUsername());
+            projectDTO.setTags(project.getTags());
+            projectDTO.setDeveloper(project.getDeveloper());
+            projectDTOs.add(projectDTO);
+        }
+
+        return projectDTOs;
     }
 }

@@ -3,6 +3,7 @@ package com.DalCollab.DTOs;
 import com.DalCollab.entities.Project;
 import lombok.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,5 +25,6 @@ public class UserDTO {
     private List<Project> projects;
     private List<String> skills;
     private List<String> interests;
+    private MultipartFile profileImage;
 
 }

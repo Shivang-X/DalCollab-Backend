@@ -11,7 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -52,10 +55,29 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(skills);
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<UserDTO> update(@Valid @RequestBody UserDTO userDTO){
+    @PostMapping("/update")
+    public ResponseEntity<UserDTO> update(@Valid @ModelAttribute UserDTO userDTO){
+        System.out.println(userDTO.getProfileImage() + "--------------------------------------------");
+        MultipartFile profileImage = userDTO.getProfileImage();
+        if (profileImage != null && !profileImage.isEmpty()) {
+            String fileName = profileImage.getOriginalFilename();
+            String filePath = "D:\\Coding\\Projects\\DalCollab-Backend\\src\\main\\java\\com\\DalCollab\\controllers" + File.separator + fileName;
+            File dest = new File(filePath);
+            try {
+                profileImage.transferTo(dest); // Assuming you have this field in UserDTO to save the path
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         userDTO = userService.update(userDTO);
         return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+    }
+
+    @PutMapping("/updateproject")
+    public ResponseEntity<ProjectDTO> updateProject(@Valid @RequestBody ProjectDTO projectDTO){
+        System.out.println(projectDTO.getDescription());
+        projectDTO = userService.updateProject(projectDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(projectDTO);
     }
 
     @PutMapping("/addinterests")

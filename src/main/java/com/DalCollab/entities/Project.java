@@ -1,5 +1,7 @@
 package com.DalCollab.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -15,6 +17,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name="project")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Project {
 
     @Id
@@ -25,7 +28,7 @@ public class Project {
     @NotNull
     private String name;
 
-    @Size(min = 1, max = 100, message= "Project description must be between 1 and 100 characters long ")
+    @Size(min = 1, max = 1000, message= "Project description must be between 1 and 1000 characters long ")
     @NotNull
     private String description;
 

@@ -1,9 +1,11 @@
 package com.DalCollab.services;
 
+import com.DalCollab.DTOs.ProjectDTO;
 import com.DalCollab.payloads.AuthResponse;
 import com.DalCollab.payloads.LoginCredentials;
 import com.DalCollab.DTOs.UserDTO;
 
+import javax.swing.*;
 import java.util.List;
 
 public interface UserService {
@@ -13,4 +15,5 @@ public interface UserService {
     UserDTO update(UserDTO userDTO);
     List<String> addSkills(List<String> skills);
     List<String> addInterests(List<String> inerests);
+    ProjectDTO updateProject(ProjectDTO projectDTO);
 }
